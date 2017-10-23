@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<!-- 基础包 -->
+	<package name="base" extends="struts-default">
+		<!-- 自定义拦截器 -->
+		 <interceptors>
+			<interceptor name="characterEncodeingFilter" class="edson.web.shop.utils.CharacterEncodingFilter"></interceptor>
+			<interceptor-stack name="myStatck">
+				<interceptor-ref name="defaultStack"/>
+				<interceptor-ref name="characterEncodeingFilter"></interceptor-ref>
+			</interceptor-stack>
+		</interceptors>
+		<!-- 指定在哪使用 -->
+		<default-interceptor-ref name="myStatck"></default-interceptor-ref>	
+		<global-results>
+			<result name="success_message">/WEB-INF/jsp/message.jsp</result>
+		</global-results>
+		<global-exception-mappings>
+			<exception-mapping result="success_message" exception="java.lang.Exception"></exception-mapping>
+		</global-exception-mappings>
+	</package>
+	
+	<!-- 前台首页模块 -->
+	<package name="shopIndex" namespace="/shopIndex" extends="base">
+		<action name="shopIndex_*" class="indexAction" method="{1}">
+			<result name="indexSuccess">/WEB-INF/jsp/index.jsp</result>
+			<allowed-methods>showIndex</allowed-methods>
+		</action>
+	</package>
+	
+	<!-- 用户模块 -->
+	<package name="user" namespace="/user" extends="base">
+		<action name="user_*" class="userAction" method="{1}">
+			<result name="success_registerUI">/WEB-INF/jsp/register.jsp</result>
+			<result name="success_loginUI">/WEB-INF/jsp/login.jsp</result>
+			<result name="success_logout" type="redirectAction">
+				<param name="actionName">shopIndex_showIndex</param>
+				<param name="namespace">/shopIndex</param>
+			</result>
+			<result name="input_register">/WEB-INF/jsp/register.jsp</result>
+			<result name="input_login">/WEB-INF/jsp/login.jsp</result>
+			<!-- 重定向到另一个包中的action -->
+			<result name="success_login" type="redirectAction">
+				<param name="actionName">shopIndex_showIndex</param>
+				<param name="namespace">/shopIndex</param>
+			</result>
+			<allowed-methods>
+				registerUI,loginUI,register,login,logout,
+				activateAccount,generateCheckImage,checkUsername
+			</allowed-methods>
+		</action>
+	</package>
+
+	<!-- 分类模块 -->
+	<package name="category" namespace="/category" extends="base">
+		<action name="categorysecond_*" class="categorysecondAction" method="{1}">
+			<result name="success_searchSecondCategory">/WEB-INF/jsp/secondCategory.jsp</result>
+			<result name="success_searchDetailSecondCategory">/WEB-INF/jsp/secondCategory.jsp</result>
+			<result name="success_viewAllCategorySecond">/WEB-INF/admin/categorysecond/list.jsp</result>
+			<result name="success_addCategorySecondUI">/WEB-INF/admin/categorysecond/add.jsp</result>
+			<result name="success_addCategorySecond" type="redirectAction">categorysecond_viewAllCategorySecond</result>
+			<result name="success_updateCategorySecond" type="redirectAction">categorysecond_viewAllCategorySecond</result>
+			<result name="success_updateCategorySecondUI">/WEB-INF/admin/categorysecond/add.jsp</result>
+			<result name="success_deleteCategorySecond" type="redirectAction">categorysecond_viewAllCategorySecond</result>
+			<allowed-methods>searchSecondCategory,searchDetailSecondCategory,viewAllCategorySecond,
+							addCategorySecondUI,addCategorySecond,updateCategorySecondUI,updateCategorySecond,deleteCategorySecond
+			</allowed-methods>
+		</action>
+		
+		<action name="category_*" class="categoryAction" method="{1}">
+			<result name="success_viewAllCategory" type="chain">
+				<param name="actionName">admin_adminCategoryList</param>
+				<param name="namespace">/admin</param>
+			</result>
+			<result name="success_addCategory" type="redirectAction">category_viewAllCategory</result>
+			<result name="success_addCategoryUI">/WEB-INF/admin/category/add.jsp</result>
+			<result name="success_updateCategoryUI">/WEB-INF/admin/category/add.jsp</result>
+			<result name="success_updateCategory" type="redirectAction">category_viewAllCategory</result>
+			<result name="success_deleteCategory" type="redirectAction">category_viewAllCategory</result>
+			<allowed-methods>viewAllCategory,addCategory,addCategoryUI,updateCategory,updateCategoryUI,deleteCategory</allowed-methods>
+		</action>
+	
+	</package>
+	
+	<!-- 商品模块 -->
+	<package name="product" namespace="/product" extends="base">
+		<action name="product_*" class="productAction" method="{1}">
+			<result name="success_showDetail">/WEB-INF/jsp/detailProduct.jsp</result>
+			<result name="success_viewAllProduct">/WEB-INF/admin/product/list.jsp</result>
+			<result name="success_updateProductUI">/WEB-INF/admin/product/add.jsp</result>
+			<result name="success_updateProduct" type="redirect">product_viewAllProduct</result>
+			<result name="success_addProductUI">/WEB-INF/admin/product/add.jsp</result>
+			<result name="success_addProduct" type="redirect">product_viewAllProduct</result>
+			<result name="success_deleteProduct" type="redirect">product_viewAllProduct</result>
+			<allowed-methods>showDetail,viewAllProduct,updateProductUI
+			,updateProduct,addProductUI,addProduct,deleteProduct</allowed-methods>
+		</action>
+	
+	</package>
+	
+	<!-- 购物车模块 -->
+	<package name="cart" namespace="/cart" extends="base">
+		<action name="cart_*" class="cartAction" method="{1}">
+			<result name="success_addCart">/WEB-INF/jsp/cart.jsp</result>
+			<result name="success_operateCart">/WEB-INF/jsp/cart.jsp</result>
+			<result name="success_cartUI">/WEB-INF/jsp/cart.jsp</result>
+			<allowed-methods>addCart,operateCart,cartUI</allowed-methods>
+		</action>
+	
+	</package>
+	
+	<!-- 订单模块 -->
+	<package name="order" namespace="/order" extends="base">
+		<action name="order_*" class="orderAction" method="{1}">
+			<result name="success_saveOrder">/WEB-INF/jsp/order.jsp</result>
+			<result name="success_loginUI">/WEB-INF/jsp/login.jsp</result>
+			<result name="success_showOrders">/WEB-INF/jsp/myorders.jsp</result>
+			<result name="success_viewAllOrders">/WEB-INF/admin/order/list.jsp</result>
+			<result name="success_viewOrderItem">/WEB-INF/admin/order/viewOrderItem.jsp</result>
+			<result name="success_updateOrderUI">/WEB-INF/admin/order/update.jsp</result>
+			<result name="success_updateOrder" type="redirectAction">order_viewAllOrders</result>
+			<result name="success_deleteOrder" type="redirectAction">order_viewAllOrders</result>
+			<result name="success_repayOrder">/WEB-INF/jsp/order.jsp</result>
+			<allowed-methods>saveOrder,showOrders,payOrder,callBack,viewAllOrders
+							,viewOrderItem,updateOrder,updateOrderUI,deleteOrder,repayOrder
+			</allowed-methods>
+		</action>
+	
+	</package>
+	
+	<!-- 后台访问页面 -->
+	<package name="admin" namespace="/admin" extends="base">
+		<action name="admin_*" class="adminAction" method="{1}">
+			<result name="success_adminBottom">/WEB-INF/admin/bottom.jsp</result>
+			<result name="success_adminTop">/WEB-INF/admin/top.jsp</result>
+			<result name="success_adminLeft">/WEB-INF/admin/left.jsp</result>
+			<result name="success_adminWelcome">/WEB-INF/admin/welcome.jsp</result>
+			<result name="success_adminHome">/WEB-INF/admin/home.jsp</result>
+			<result name="success_adminUserList">/WEB-INF/admin/user/list.jsp</result>
+			<result name="success_adminCategoryList">/WEB-INF/admin/category/list.jsp</result>
+			<allowed-methods>adminHome,adminBottom,adminTop,adminLeft,adminWelcome,adminUserList,adminCategoryList</allowed-methods>
+		</action>
+		
+		<action name="/user_*" class="adminUserAction" method="{1}">
+			<!-- 重定向action在同一包下 -->
+			<result name="success_adminLogin" type="redirectAction">admin_adminHome</result>
+			<result name="success_listAdminUser" type="chain">admin_adminUserList</result>
+			<result name="login_input">/admin_login.jsp</result>
+			<result name="success_addAdminUser" type="redirectAction">user_listAdminUser</result>
+			<result name="success_addAdminUserUI">/WEB-INF/admin/user/add.jsp</result>
+			<result name="success_deleteAdminUser" type="redirectAction">user_listAdminUser</result>
+			<result name="success_updateAdminUserUI">/WEB-INF/admin/user/add.jsp</result>
+			<result name="success_updateAdminUser" type="redirectAction">user_listAdminUser</result>
+			
+			<allowed-methods>adminLogin,listAdminUser,addAdminUserUI,addAdminUser,deleteAdminUser,updateAdminUserUI,updateAdminUser</allowed-methods>
+		</action>
+	</package>
+</struts>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

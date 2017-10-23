@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+	<class name="edson.web.shop.user.User" table="user" >
+		<id name="id" column="cid">
+			<generator class="native"></generator>
+		</id>
+		
+		<property name="username" length="60"/>
+		<property name="password" length="60"/>
+		<property name="email" length="60"/>
+		<property name="realname" length="60"/>
+		<property name="gender" length="60"/>
+		<property name="phone" length="60"/>
+		<property name="address" length="60"/>
+		<property name="state" type="int"/>
+		<property name="code" length="60"/>
+		
+		<set name="orders" cascade="all-delete-orphan" inverse="true">
+			<key column="cid"></key>
+			<one-to-many class="edson.web.shop.orders.Order"/>
+		</set>
+		
+	</class>
+
+
+</hibernate-mapping>
+
+
+
+
+

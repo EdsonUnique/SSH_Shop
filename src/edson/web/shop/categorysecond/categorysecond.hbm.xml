@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+	<class name="edson.web.shop.categorysecond.CategorySecond" table="categorysecond" >
+		<id name="id" column="csid">
+			<generator class="native"></generator>
+		</id>
+		
+		<property name="name" length="60"/>
+		
+		<many-to-one name="cfirst" class="edson.web.shop.category.Category" column="cid" lazy="false"/>
+		<set name="products" lazy="false">
+			<key column="csid"/>
+			<one-to-many class="edson.web.shop.product.Product"/>
+		</set>
+	</class>
+
+
+</hibernate-mapping>
+
+
+
+
+

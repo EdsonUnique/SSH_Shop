@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+	<class name="edson.web.shop.orders.OrderItem" table="orderItem" >
+		<id name="id" column="item_id">
+			<generator class="native"></generator>
+		</id>
+		
+		<property name="sum" length="60"/>
+		<property name="count" length="60"/>
+		<!-- 保存商品id -->
+		<many-to-one name="product" class="edson.web.shop.product.Product" lazy="false"></many-to-one>
+		<many-to-one name="order" class="edson.web.shop.orders.Order" column="oid"></many-to-one>
+	</class>
+
+
+</hibernate-mapping>
+
+
+
+
+

@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context.xsd
+	http://www.springframework.org/schema/aop
+	http://www.springframework.org/schema/aop/spring-aop.xsd
+	http://www.springframework.org/schema/tx 
+	http://www.springframework.org/schema/tx/spring-tx.xsd">
+	
+	<context:property-placeholder location="classpath:database.properties"/>
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<property name="driverClass" value="${jdbc.driver}"></property>
+		<property name="user" value="${jdbc.username}"></property>
+		<property name="password" value="${jdbc.password}"></property>
+		<property name="jdbcUrl" value="${jdbc.url}"></property>
+	</bean>
+	
+	<!-- Spring整合Hibernate核心配置文件 -->
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource"/>
+		<!-- Hibernate信息 -->
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.show_sql">true</prop>
+				<prop key="hibernate.format_sql">true</prop>
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+				<!-- 创建数据库表 -->
+				<prop key="hibernate.hbm2ddl.auto">update</prop>
+			</props>
+		</property>
+		<!-- 配置映射文件 -->
+		 <property name="mappingResources">
+		 	<list>
+		 		<value>edson/web/shop/user/user.hbm.xml</value>
+		 		<value>edson/web/shop/orders/order.hbm.xml</value>
+		 		<value>edson/web/shop/orders/orderitem.hbm.xml</value>
+		 		<value>edson/web/shop/category/category.hbm.xml</value>
+		 		<value>edson/web/shop/categorysecond/categorysecond.hbm.xml</value>
+		 		<value>edson/web/shop/product/product.hbm.xml</value>
+		 		<value>edson/web/shop/admin/user/adminUser.hbm.xml</value>
+		 	</list>
+		 </property>
+	</bean>
+	
+	<!-- 开启事务管理 -->
+	<bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+		<!-- 注入 sessionFactory-->
+		<property name="sessionFactory" ref="sessionFactory"/>
+	</bean>
+	
+	<tx:annotation-driven transaction-manager="transactionManager"/>
+	
+	<!-- 将Struts2的action交由Spring创建 -->
+	<bean id="indexAction" class="edson.web.shop.index.ShopIndex" scope="prototype">
+		<property name="cservice" ref="categoryService"></property>
+		<property name="pservice" ref="productService"></property>
+	</bean>
+	
+	<!-- 用户模块 -->
+	<bean id="userAction" class="edson.web.shop.user.UserAction" scope="prototype">
+		<property name="uservice" ref="userService"/>
+	</bean>
+	
+	<bean id="userService" class="edson.web.shop.user.UserService">
+		<property name="udao" ref="userDao"/>
+	</bean>
+	
+	<bean id="userDao" class="edson.web.shop.user.UserDao">
+		<!-- 注册HibernateTemplate -->
+		<property name="sessionFactory" ref="sessionFactory" ></property>
+	</bean>
+	
+	<!-- 商品模块 -->
+	
+	<bean id="productDao" class="edson.web.shop.product.ProductDao">
+		<property name="sessionFactory" ref="sessionFactory"/>
+	</bean>
+	
+	<bean id="productService" class="edson.web.shop.product.ProductService">
+		<property name="pdao" ref="productDao"></property>
+	</bean>
+	<bean id="productAction" class="edson.web.shop.product.ProductAction" scope="prototype">
+		<property name="pservice" ref="productService"></property>
+	</bean>
+	
+	<!-- 一级分类模块 -->
+	<bean id="categoryDao" class="edson.web.shop.category.CategoryDao">
+		<property name="sessionFactory" ref="sessionFactory"/>
+	</bean>
+	
+	<bean id="categoryService" class="edson.web.shop.category.CategoryService">
+		<property name="cdao" ref="categoryDao"></property>
+	</bean>
+	<bean id="categoryAction" class="edson.web.shop.category.CategoryAction" scope="prototype">
+		<property name="cservice" ref="categoryService"></property>
+	</bean>
+	
+	<!-- 二级分类模块 -->
+	<bean id="categorysecondAction" class="edson.web.shop.categorysecond.CategorySecondAction" scope="prototype">
+		<property name="csservice" ref="categorysecondService"/>
+	</bean>
+	
+	<bean id="categorysecondDao" class="edson.web.shop.categorysecond.CategorySecondDao">
+		<property name="sessionFactory" ref="sessionFactory"/>
+	</bean>
+	
+	<bean id="categorysecondService" class="edson.web.shop.categorysecond.CategorySecondService">
+		<property name="csdao" ref="categorysecondDao"></property>
+	</bean>
+	
+	<!-- 购物车模块 -->
+	<bean id="cartAction" class="edson.web.shop.cart.CartAction" scope="prototype"/>
+	
+	<!-- 订单模块 -->
+	<bean id="orderAction" class="edson.web.shop.orders.OrderAction" scope="prototype">
+		<property name="oservice" ref="orderService"/>
+	</bean>
+	
+	<bean id="orderDao" class="edson.web.shop.orders.OrderDao">
+		<property name="sessionFactory" ref="sessionFactory"/>
+	</bean>
+	
+	<bean id="orderService" class="edson.web.shop.orders.OrderService">
+		<property name="odao" ref="orderDao"></property>
+	</bean>
+
+	<!-- 后台模块 -->
+	<bean id="adminAction" class="edson.web.shop.admin.AdminAction" scope="prototype"/>
+
+	<bean id="adminUserAction" class="edson.web.shop.admin.user.AdminUserAction" scope="prototype">
+		<property name="uservice" ref="adminUserService"/>
+	</bean>
+	
+	<bean id="adminUserDao" class="edson.web.shop.admin.user.AdminUserDao">
+		<property name="sessionFactory" ref="sessionFactory"/>
+	</bean>
+	
+	<bean id="adminUserService" class="edson.web.shop.admin.user.AdminUserService">
+		<property name="udao" ref="adminUserDao"></property>
+	</bean>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</beans>
